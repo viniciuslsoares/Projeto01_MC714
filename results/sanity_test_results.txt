@@ -1,0 +1,44 @@
+================================================================================
+ MC714 - TESTES DE SANIDADE DO SIMULADOR (DISCRETE EVENT SIMULATION)
+================================================================================
+
+[TESTE 1] Cheque de Sanidade com Carga Baixa (lambda = 0.1 req/u.t.)
+Teoria: E[R] deve tender a E[S] = 1.0 u.t. e X approx 0.1 req/u.t.
+ -> E[R] Teórico: 1.0345 u.t. | E[R] Simulado: 1.0586 u.t.
+ -> E[N] Teórico: 0.1034      | E[N] Simulado: 0.1082
+ -> Vazão X Teórica: 0.1000      | Vazão X Simulada: 0.1022
+ [OK] Teste 1 aprovado com sucesso!
+
+--------------------------------------------------------------------------------
+[TESTE 2] Comparação das 3 Políticas com lambda = 1.8 req/u.t. (10 réplicas)
+Valores Analíticos Teóricos (M/M/1 - Aleatória):
+ -> E[R] Teórico  = 2.5000 u.t.
+ -> E[N] Teórico  = 4.5000 requisições
+ -> Utilização U_i = 0.6000
+ -> Vazão X       = 1.8000 req/u.t.
+
+Política: Aleatória (Random)
+ -> E[R] = 2.5322 ± 0.0691 u.t.
+ -> E[N] = 4.5765 ± 0.1437 reqs
+ -> X    = 1.8052 ± 0.0113 req/u.t.
+ -> U_i  = [0.5991, 0.6021, 0.6032]
+ -> Lei de Little (E[N] vs X*E[R]): 4.5765 vs 4.5712 (Erro: 0.12%)
+
+Política: Round-Robin
+ -> E[R] = 1.8060 ± 0.0536 u.t.
+ -> E[N] = 3.2558 ± 0.1073 reqs
+ -> X    = 1.8010 ± 0.0094 req/u.t.
+ -> U_i  = [0.6007, 0.593, 0.5968]
+ -> Lei de Little (E[N] vs X*E[R]): 3.2558 vs 3.2526 (Erro: 0.10%)
+
+Política: Fila Mais Curta (JSQ)
+ -> E[R] = 1.4046 ± 0.0216 u.t.
+ -> E[N] = 2.5327 ± 0.0448 reqs
+ -> X    = 1.8024 ± 0.0082 req/u.t.
+ -> U_i  = [0.5984, 0.6017, 0.5953]
+ -> Lei de Little (E[N] vs X*E[R]): 2.5327 vs 2.5315 (Erro: 0.05%)
+
+================================================================================
+ TODOS OS TESTES DE SANIDADE FORAM CONCLUÍDOS COM SUCESSO!
+ [INFO] Resultados gravados em: results/sanity_test_results.txt
+================================================================================
