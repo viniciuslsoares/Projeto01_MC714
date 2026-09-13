@@ -4,7 +4,6 @@ Módulo que define a classe Server (Servidor com fila FCFS e suporte a buffer fi
 
 from collections import deque
 from typing import Optional
-import numpy as np
 
 from src.models import Request
 
@@ -56,40 +55,59 @@ class Server:
             return True
         return self.total_requests < self.capacity
 
-    def update_busy_time(self, current_time: float, warmup_time: float):
+    def update_busy_time(
+        self,
+        current_time: float,
+        warmup_time: float,
+        measurement_end: Optional[float] = None
+    ):
         """
         Atualiza a integral do tempo ocupado pelo servidor, contabilizando apenas
-        o período após o tempo de warm-up.
+        o período dentro da janela de medição [warmup_time, measurement_end].
+
+        Args:
+            current_time: Instante atual da simulação.
+            warmup_time: Início da janela de medição (amostras anteriores são descartadas).
+            measurement_end: Fim da janela de medição (T_fim). O tempo gasto na fase de
+                drenagem, após T_fim, NÃO conta para U_i — a janela de medição tem
+                duração fixa e conhecida (T_fim - warm-up), e é ela que vai ao denominador.
         """
         if current_time <= warmup_time:
             self.last_busy_update_time = max(current_time, self.last_busy_update_time)
             return
 
+        # Recorta o intervalo [last_busy_update_time, current_time] na janela de medição
+        end = current_time if measurement_end is None else min(current_time, measurement_end)
         effective_start = max(self.last_busy_update_time, warmup_time)
-        if self.is_busy and current_time > effective_start:
-            self.total_busy_time_post_warmup += (current_time - effective_start)
-            
+        if self.is_busy and end > effective_start:
+            self.total_busy_time_post_warmup += (end - effective_start)
+
         self.last_busy_update_time = current_time
 
-    def start_service(self, request: Request, current_time: float, rng: np.random.Generator) -> float:
+    def start_service(self, request: Request, current_time: float) -> float:
         """
         Inicia o atendimento de uma requisição.
-        
+
+        O tempo de serviço NÃO é sorteado aqui: a requisição já carrega sua demanda
+        normalizada request.service_base ~ Exp(1), sorteada no instante da chegada.
+        Aqui apenas se converte a demanda em duração dividindo pela taxa deste servidor.
+        Isso mantém Exp(1)/mu == Exp(mu) e garante que a mesma requisição tenha a mesma
+        demanda sob qualquer política de balanceamento (variáveis aleatórias comuns).
+
         Args:
             request: A requisição a ser atendida.
             current_time: Instante da simulação em que o serviço inicia.
-            rng: Gerador de números aleatórios NumPy para sortear o tempo de serviço.
-            
+
         Returns:
-            Duração do tempo de serviço sorteado.
+            Duração do tempo de serviço.
         """
         self.is_busy = True
         self.current_request = request
         request.server_id = self.id
         request.start_service_time = current_time
-        
-        # Sorteia o tempo de serviço exponencial: E[S] = 1/mu
-        duration = rng.exponential(scale=1.0 / self.mu)
+
+        # Converte a demanda Exp(1) em tempo de serviço Exp(mu): E[S] = 1/mu
+        duration = request.service_base / self.mu
         request.service_time = duration
         return duration
 

@@ -21,7 +21,12 @@ class Request:
     Atributos:
         id: Identificador único sequencial da requisição.
         arrival_time: Instante exato de chegada da requisição no balanceador.
-        service_time: Duração do atendimento gerada a partir da distribuição exponencial.
+        service_base: Demanda de serviço normalizada ~ Exp(1), sorteada na CHEGADA.
+            O tempo de serviço efetivo é service_base / mu do servidor que a atender.
+            Como Exp(1)/mu tem exatamente a distribuição Exp(mu), o modelo é o mesmo,
+            mas a requisição carrega a MESMA demanda em todas as políticas comparadas
+            (variáveis aleatórias comuns) e em servidores de mu diferente.
+        service_time: Duração efetiva do atendimento (service_base / mu), preenchida no início do serviço.
         server_id: ID do servidor para o qual a requisição foi alocada (None se descartada).
         start_service_time: Instante em que o servidor começou a processar a requisição.
         departure_time: Instante em que a requisição concluiu o serviço e saiu do sistema.
@@ -30,6 +35,7 @@ class Request:
     """
     id: int
     arrival_time: float
+    service_base: float = 1.0
     service_time: float = 0.0
     server_id: Optional[int] = None
     start_service_time: Optional[float] = None
