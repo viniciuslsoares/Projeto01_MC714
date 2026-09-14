@@ -1,0 +1,32 @@
+{
+  "gerado_em": "2026-09-14T15:22:42",
+  "git_commit": "dc4e5991557f6bbb99c7df4c0576c126b42c2064",
+  "comando": "python -m experiments.run_experiments",
+  "python": "3.14.4",
+  "numpy": "2.5.3",
+  "config": {
+    "lambdas": [
+      0.6,
+      1.2,
+      1.8,
+      2.4,
+      2.7
+    ],
+    "policies": [
+      "random",
+      "round_robin",
+      "shortest_queue"
+    ],
+    "replicas": 10,
+    "duration": 5000.0,
+    "warmup": 500.0,
+    "mu": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "weights": null,
+    "track_trajectory": false,
+    "seed_base": 1000
+  }
+}
