@@ -16,6 +16,8 @@ from experiments.grid import setup
 ETAPAS = [
     ("Grid do enunciado (5 lambdas x 3 políticas x 10 réplicas)", "experiments.run_experiments"),
     ("Regime instável lambda = 3.3 (item f)", "experiments.run_instability"),
+    # Terceiro e último: só relê os CSVs, nunca simula.
+    ("Análise: tabelas, figuras e verificações", "analysis.analise"),
 ]
 
 

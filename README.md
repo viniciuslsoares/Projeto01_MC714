@@ -133,9 +133,10 @@ Projeto01_MC714/
 │   ├── simulator.py           # Motor DES (heapq, Poisson, warm-up e integral de E[N])
 │   └── metrics.py             # Agregação estatística, IC 95% (t-Student) e Lei de Little
 │
-├── analysis/                  # Modelagem Analítica e Teoria de Filas
+├── analysis/                  # Teoria e análise dos dados medidos
 │   ├── __init__.py
-│   └── analytical_model.py    # Fórmulas fechadas para M/M/1, M/M/1/K e Heterogêneo
+│   ├── analytical_model.py    # MODELAGEM ANALÍTICA: fórmulas fechadas (M/M/1, E_3/M/1, M/M/1/K, heterogêneo)
+│   └── analise.py             # ANÁLISE EMPÍRICA: relê os CSVs e gera tabelas, figuras e verificações
 │
 ├── experiments/               # Automação de Experimentos
 │   ├── __init__.py
@@ -144,10 +145,13 @@ Projeto01_MC714/
 │   ├── run_instability.py     # Experimento de sobrecarga (lambda = 3.3)
 │   └── run_all.py             # Porta da frente: gera todos os resultados em ordem
 │
-├── tests/                     # Bateria pytest do executor de grade
-│   └── test_grid.py
+├── tests/                     # Bateria pytest dos dois seams do pipeline
+│   ├── test_grid.py           # Execução da grade
+│   └── test_analise.py        # Agregação das réplicas
 │
-├── results/                   # Arquivos CSV de métricas e figuras geradas
+├── results/                   # CSVs brutos e agregados, verificações
+│   ├── figures/               # Figuras em PDF vetorial para o \includegraphics
+│   └── tables/                # Fragmentos LaTeX para o \input
 │
 └── report/                    # Artigo em LaTeX (template IEEEtran de 4 páginas)
     ├── main.tex
@@ -200,6 +204,10 @@ Produz em `results/`:
 | `metrics.csv` | 150 linhas — uma por (política, $\lambda$, réplica). Dado bruto, sem agregação. |
 | `instability_summary.csv` | 9 linhas do regime instável $\lambda = 3.3$: vazão, $N$ final e utilizações. |
 | `instability_trajectories.csv` | Trajetória $N(t)$ evento a evento (não versionada: regenerável). |
+| `aggregated_metrics.csv` | Uma linha por configuração: média, semi-IC 95%, Lei de Little, teoria e ganho. |
+| `verifications.txt` | As seis verificações (as mesmas impressas no terminal): réplicas, `n_arrived`, Little, $X$, $U_i$ e ordenação. |
+| `tables/*.tex` | Tabela teórica (item *b*) e tabela medida (item *d*), prontas para `\input{}`. |
+| `figures/*.pdf` | $E[R] \times \lambda$, painel de instabilidade e, quando houver dados, o painel do ponto extra. |
 | `*.meta.json` | Proveniência: commit, data, versões e parâmetros de cada execução. |
 
 ### 4. Executar as Etapas Isoladamente
@@ -208,6 +216,20 @@ Produz em `results/`:
 python -m experiments.run_experiments                 # grid do enunciado
 python -m experiments.run_experiments --quick         # 2 réplicas, para depurar
 python -m experiments.run_instability                 # regime instável lambda = 3.3
+python -m analysis.analise                            # tabelas, figuras e verificações
+```
+
+A análise **nunca simula**: ela só relê os CSVs. Corrigir uma figura ou trocar o
+nível de confiança custa reler um arquivo, não rodar a grade de novo. Ela aceita
+vários CSVs de uma vez e agrupa por (política, $\lambda$, $\mu$, duração), então
+concatenar rodadas funciona sem opção nova:
+
+```bash
+# Ponto extra: o painel uniforme x proporcional sai só de apontar para o CSV heterogêneo
+python -m analysis.analise --input results/metrics.csv results/metrics_hetero.csv
+
+# Convergência de horizonte finito: duração diferente vira outro grupo de linhas
+python -m analysis.analise --input results/metrics.csv results/metrics_20k.csv
 ```
 
 O grid padrão é exatamente o do enunciado; a linha de comando serve apenas para
@@ -226,7 +248,7 @@ python -m experiments.run_experiments --policies proportional --mu 1.5 1.0 0.5
 
 ```bash
 python test_sanity.py     # validação do motor contra a teoria
-python -m pytest          # bateria do executor de grade
+python -m pytest          # bateria dos dois seams: executor de grade e agregação
 ```
 
 ---

@@ -4,6 +4,7 @@ Módulo com as fórmulas fechadas da Modelagem Analítica (Teoria de Filas).
 
 from typing import Dict, List, Optional
 import numpy as np
+from scipy.optimize import brentq
 
 
 class AnalyticalModel:
@@ -59,6 +60,58 @@ class AnalyticalModel:
             "E_Ni": E_Ni,
             "E_N": E_N,
             "X": X
+        }
+
+    @staticmethod
+    def round_robin_e3m1(
+        lambda_rate: float,
+        num_servers: int = 3,
+        mu: float = 1.0
+    ) -> Dict[str, float]:
+        """
+        Calcula E[R] da política round-robin, que NÃO é uma M/M/1.
+
+        Cada servidor recebe a cada num_servers-ésima chegada, então o intervalo
+        entre chegadas nele é Erlang-k, não exponencial: o servidor é uma E_k/M/1,
+        cuja solução exata é a raiz sigma em (0, 1) de
+
+            sigma = A*(mu (1 - sigma)),   A*(s) = (lambda / (lambda + s))^k
+
+        com E[T_Q] = sigma / (mu (1 - sigma)) e E[R] = E[T_Q] + 1/mu.
+
+        ATENÇÃO: E_k/M/1 é teoria externa (GI/M/1, Harchol-Balter) e não está nos
+        slides da Aula 5. Declarar a origem no relatório.
+        """
+        rho = lambda_rate / (num_servers * mu)
+
+        if rho >= 1.0:
+            return {
+                "is_stable": False,
+                "lambda": lambda_rate,
+                "mu": mu,
+                "rho": rho,
+                "sigma": 1.0,
+                "E_TQ": float("inf"),
+                "E_R": float("inf")
+            }
+
+        def fixed_point(sigma: float) -> float:
+            transform = (lambda_rate / (lambda_rate + mu * (1.0 - sigma))) ** num_servers
+            return transform - sigma
+
+        # sigma = 1 é sempre raiz e não é a que interessa. O intervalo isola a
+        # outra: fixed_point(0) > 0 e fixed_point(1 - eps) < 0.
+        sigma = float(brentq(fixed_point, 0.0, 1.0 - 1e-9))
+        E_TQ = sigma / (mu * (1.0 - sigma))
+
+        return {
+            "is_stable": True,
+            "lambda": lambda_rate,
+            "mu": mu,
+            "rho": rho,
+            "sigma": sigma,
+            "E_TQ": E_TQ,
+            "E_R": E_TQ + 1.0 / mu
         }
 
     @staticmethod
