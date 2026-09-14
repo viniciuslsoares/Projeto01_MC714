@@ -138,9 +138,14 @@ Projeto01_MC714/
 │   └── analytical_model.py    # Fórmulas fechadas para M/M/1, M/M/1/K e Heterogêneo
 │
 ├── experiments/               # Automação de Experimentos
+│   ├── __init__.py
+│   ├── grid.py                # Executor da grade (compartilhado) + escrita atômica de CSV
 │   ├── run_experiments.py     # Execução das 15 configurações base (10 sementes cada)
 │   ├── run_instability.py     # Experimento de sobrecarga (lambda = 3.3)
-│   └── run_extra_point.py     # Experimentos da extensão (Buffer Finito / Heterogêneo)
+│   └── run_all.py             # Porta da frente: gera todos os resultados em ordem
+│
+├── tests/                     # Bateria pytest do executor de grade
+│   └── test_grid.py
 │
 ├── results/                   # Arquivos CSV de métricas e figuras geradas
 │
@@ -163,6 +168,9 @@ Projeto01_MC714/
 
 ## 🛠️ 8. Instalação e Execução
 
+Requer **Python 3.10 ou superior**. Todos os comandos são executados **na raiz do
+repositório** e não dependem de nenhuma variável de ambiente.
+
 ### 1. Configurar Ambiente Virtual
 
 ```bash
@@ -179,10 +187,46 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Executar o Teste de Sanidade
+### 3. Gerar Todos os Resultados (~20 s)
 
 ```bash
-python test_sanity.py
+python -m experiments.run_all
+```
+
+Produz em `results/`:
+
+| Arquivo | Conteúdo |
+| :--- | :--- |
+| `metrics.csv` | 150 linhas — uma por (política, $\lambda$, réplica). Dado bruto, sem agregação. |
+| `instability_summary.csv` | 9 linhas do regime instável $\lambda = 3.3$: vazão, $N$ final e utilizações. |
+| `instability_trajectories.csv` | Trajetória $N(t)$ evento a evento (não versionada: regenerável). |
+| `*.meta.json` | Proveniência: commit, data, versões e parâmetros de cada execução. |
+
+### 4. Executar as Etapas Isoladamente
+
+```bash
+python -m experiments.run_experiments                 # grid do enunciado
+python -m experiments.run_experiments --quick         # 2 réplicas, para depurar
+python -m experiments.run_instability                 # regime instável lambda = 3.3
+```
+
+O grid padrão é exatamente o do enunciado; a linha de comando serve apenas para
+sobrepor (`--lambdas`, `--policies`, `--replicas`, `--duration`, `--warmup`,
+`--mu`, `--weights`, `--output`). Exemplos:
+
+```bash
+# Horizonte mais longo (converge o desvio residual em lambda = 2.7)
+python -m experiments.run_experiments --duration 20000 --output results/metrics_20k.csv
+
+# Ponto extra heterogêneo: mu = [1.5, 1.0, 0.5]
+python -m experiments.run_experiments --policies proportional --mu 1.5 1.0 0.5
+```
+
+### 5. Executar os Testes
+
+```bash
+python test_sanity.py     # validação do motor contra a teoria
+python -m pytest          # bateria do executor de grade
 ```
 
 ---

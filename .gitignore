@@ -84,3 +84,7 @@ report/*.fls
 report/*.fdb_latexmk
 report/*.synctex.gz
 report/*.pdfsync
+
+# Trajetórias do regime instável: com semente fixa são regeneráveis em segundos
+results/*trajectories*.csv
+results/*.tmp
