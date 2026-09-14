@@ -699,6 +699,10 @@ def figure_heterogeneous(configs: List[ConfigResult], path: Path) -> None:
     fig, ax = plt.subplots(figsize=(COLUMN_WIDTH_IN, 2.7))
     _plot_policies(ax, configs, rename={LoadBalancerPolicy.RANDOM: "uniforme (1/3)"})
 
+    # Eixo log: quando a uniforme satura um servidor, o E[R] dela fica duas ordens
+    # de grandeza acima da proporcional e em escala linear a proporcional viraria
+    # uma reta em zero.
+    ax.set_yscale("log")
     ax.set_title(rf"$\mu = {list(configs[0].mu)}$", fontsize=8)
     ax.legend(fontsize=6.5)
     _save(fig, path)

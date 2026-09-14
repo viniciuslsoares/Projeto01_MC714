@@ -13,23 +13,32 @@ import sys
 
 from experiments.grid import setup
 
+HETERO_OUTPUT = "results/metrics_hetero.csv"
+
 ETAPAS = [
-    ("Grid do enunciado (5 lambdas x 3 políticas x 10 réplicas)", "experiments.run_experiments"),
-    ("Regime instável lambda = 3.3 (item f)", "experiments.run_instability"),
-    # Terceiro e último: só relê os CSVs, nunca simula.
-    ("Análise: tabelas, figuras e verificações", "analysis.analise"),
+    ("Grid do enunciado (5 lambdas x 3 políticas x 10 réplicas)",
+     "experiments.run_experiments", []),
+    ("Regime instável lambda = 3.3 (item f)",
+     "experiments.run_instability", []),
+    ("Ponto extra: servidores heterogêneos, uniforme x proporcional",
+     "experiments.run_experiments",
+     ["--policies", "random", "proportional", "--mu", "1.5", "1.0", "0.5",
+      "--output", HETERO_OUTPUT]),
+    # Último passo: só relê os CSVs, nunca simula.
+    ("Análise: tabelas, figuras e verificações",
+     "analysis.analise", ["--input", "results/metrics.csv", HETERO_OUTPUT]),
 ]
 
 
 def main() -> None:
     setup()
 
-    for titulo, modulo in ETAPAS:
+    for titulo, modulo, argumentos in ETAPAS:
         # flush=True: sem isto, ao redirecionar a saída para um arquivo, os títulos
         # sairiam depois do texto dos subprocessos.
         print(f"\n{'=' * 72}\n {titulo}\n{'=' * 72}", flush=True)
         # sys.executable garante o mesmo Python (e o mesmo venv) desta execução.
-        done = subprocess.run([sys.executable, "-m", modulo])
+        done = subprocess.run([sys.executable, "-m", modulo] + argumentos)
         if done.returncode != 0:
             sys.exit(f"\n{modulo} falhou. Nada mais será executado.")
 

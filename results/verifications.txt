@@ -1,17 +1,26 @@
 [OK   ] réplicas por configuração todas iguais (falha dura)
          mu=[1.0, 1.0, 1.0], T=5000: 15 config., 10 réplicas cada
+         mu=[1.5, 1.0, 0.5], T=5000: 10 config., 10 réplicas cada
 [OK   ] n_arrived idêntico entre as políticas
-         50 pares (λ, réplica) com n_arrived idêntico entre as políticas.
-[OK   ] Lei de Little (E[N] contra X*E[R])
-         maior erro 0.154% em aleatória λ=2.4, limiar 0.2%.
-[OK   ] X coincide entre as políticas dentro do IC
-         λ=0.6: Δ=0.007% (limiar 1.0%), ICs sobrepostos
-         λ=1.2: Δ=0.006% (limiar 1.0%), ICs sobrepostos
-         λ=1.8: Δ=0.004% (limiar 1.0%), ICs sobrepostos
-         λ=2.4: Δ=0.032% (limiar 1.0%), ICs sobrepostos
-         λ=2.7: Δ=0.044% (limiar 1.0%), ICs sobrepostos
+         100 pares (λ, réplica) com n_arrived idêntico entre as políticas.
+[AVISO] Lei de Little (E[N] contra X*E[R])
+         aleatória λ=2.7 (mu=[1.5, 1.0, 0.5], T=5000): erro 53.538% (limiar 0.2%)
+         aleatória λ=2.4 (mu=[1.5, 1.0, 0.5], T=5000): erro 40.549% (limiar 0.2%)
+         aleatória λ=1.8 (mu=[1.5, 1.0, 0.5], T=5000): erro 13.842% (limiar 0.2%)
+         aleatória λ=1.2 (mu=[1.5, 1.0, 0.5], T=5000): erro 0.285% (limiar 0.2%)
+[AVISO] X coincide entre as políticas dentro do IC
+         λ=0.6 (mu=[1.0, 1.0, 1.0], T=5000): Δ=0.007% (limiar 1.0%), ICs sobrepostos
+         λ=1.2 (mu=[1.0, 1.0, 1.0], T=5000): Δ=0.006% (limiar 1.0%), ICs sobrepostos
+         λ=1.8 (mu=[1.0, 1.0, 1.0], T=5000): Δ=0.004% (limiar 1.0%), ICs sobrepostos
+         λ=2.4 (mu=[1.0, 1.0, 1.0], T=5000): Δ=0.032% (limiar 1.0%), ICs sobrepostos
+         λ=2.7 (mu=[1.0, 1.0, 1.0], T=5000): Δ=0.044% (limiar 1.0%), ICs sobrepostos
+         λ=0.6 (mu=[1.5, 1.0, 0.5], T=5000): Δ=0.060% (limiar 1.0%), ICs sobrepostos
+         λ=1.2 (mu=[1.5, 1.0, 0.5], T=5000): Δ=0.080% (limiar 1.0%), ICs sobrepostos
+         λ=1.8 (mu=[1.5, 1.0, 0.5], T=5000): Δ=5.765% (limiar 1.0%), ICs DISJUNTOS
+         λ=2.4 (mu=[1.5, 1.0, 0.5], T=5000): Δ=14.318% (limiar 1.0%), ICs DISJUNTOS
+         λ=2.7 (mu=[1.5, 1.0, 0.5], T=5000): Δ=17.374% (limiar 1.0%), ICs DISJUNTOS
 [AVISO] U_i contra rho = λ/(3 mu)
-         round-robin λ=0.6: rho=0.2000, U=[0.1991, 0.1963, 0.1964] ± [0.0032, 0.0054, 0.0028] — fora do semi-IC
-         fila mais curta λ=0.6: rho=0.2000, U=[0.1962, 0.1995, 0.1961] ± [0.0028, 0.0060, 0.0040] — fora do semi-IC
+         round-robin λ=0.6 (mu=[1.0, 1.0, 1.0], T=5000): rho=0.2000, U=[0.1991, 0.1963, 0.1964] ± [0.0032, 0.0054, 0.0028] — fora do semi-IC
+         fila mais curta λ=0.6 (mu=[1.0, 1.0, 1.0], T=5000): rho=0.2000, U=[0.1962, 0.1995, 0.1961] ± [0.0028, 0.0060, 0.0040] — fora do semi-IC
 [OK   ] ordenação das políticas em E[R]
          ordenação fila mais curta <= round-robin <= aleatória, sem sobreposição de ICs.

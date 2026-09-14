@@ -191,7 +191,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Gerar Todos os Resultados (~20 s)
+### 3. Gerar Todos os Resultados (~30 s)
 
 ```bash
 python -m experiments.run_all
@@ -204,10 +204,11 @@ Produz em `results/`:
 | `metrics.csv` | 150 linhas — uma por (política, $\lambda$, réplica). Dado bruto, sem agregação. |
 | `instability_summary.csv` | 9 linhas do regime instável $\lambda = 3.3$: vazão, $N$ final e utilizações. |
 | `instability_trajectories.csv` | Trajetória $N(t)$ evento a evento (não versionada: regenerável). |
+| `metrics_hetero.csv` | 100 linhas do ponto extra: $\mu = [1{,}5;\ 1{,}0;\ 0{,}5]$, uniforme × proporcional. |
 | `aggregated_metrics.csv` | Uma linha por configuração: média, semi-IC 95%, Lei de Little, teoria e ganho. |
 | `verifications.txt` | As seis verificações (as mesmas impressas no terminal): réplicas, `n_arrived`, Little, $X$, $U_i$ e ordenação. |
 | `tables/*.tex` | Tabela teórica (item *b*) e tabela medida (item *d*), prontas para `\input{}`. |
-| `figures/*.pdf` | $E[R] \times \lambda$, painel de instabilidade e, quando houver dados, o painel do ponto extra. |
+| `figures/*.pdf` | $E[R] \times \lambda$, painel de instabilidade e painel do ponto extra. |
 | `*.meta.json` | Proveniência: commit, data, versões e parâmetros de cada execução. |
 
 ### 4. Executar as Etapas Isoladamente
